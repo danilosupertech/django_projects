@@ -1,0 +1,16 @@
+{% load static %}
+<div class="cabecalho__busca">
+  <div class="busca__fundo">
+    <form class="d-flex" action="{% url 'index' %}" method="GET">
+      <input
+        class="form-control me-2"
+        type="search"
+        placeholder="Buscar..."
+        aria-label="Buscar"
+        name="q"
+        value="{{ request.GET.q }}"
+      />
+      <button class="btn btn-outline-light" type="submit">🔍</button>
+    </form>
+  </div>
+</div>

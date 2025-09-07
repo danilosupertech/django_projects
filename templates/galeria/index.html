@@ -7,7 +7,7 @@
       src="{% static 'assets/logo/Logo(2).png' %}"
       alt="Logo Space"
     />
-  {% include "galeria/partials/buscar.html" %}
+  {% include "galeria/partials/_buscar.html" %}
   </header>
 
   <main class="principal">
@@ -41,15 +41,26 @@
           <ul class="cards__lista">
             {% if cards %} {% for fotografia in cards %}
             <li class="card">
-              <a href="{% url 'imagem' fotografia.id %}">
+              
+                {% if fotografia.imagem == "" or fotografia.imagem == null %}
                 <img
                   width="300"
                   height="200"
                   class="card__imagem"
-                  src="{% static 'assets/imagens/galeria/'|add:fotografia.imagem %}"
+                  src="{% static 'assets/imagens/galeria/sem-foto.png' %}"
+                  alt="foto"
+                />
+                {%else%}
+                <a href="{% url 'imagem' fotografia.id %}">
+                <img
+                  width="300"
+                  height="200"
+                  class="card__imagem"
+                  src="{{ fotografia.imagem.url }}"
                   alt="foto"
                 />
               </a>
+              {%endif%}
               <span class="card__tag text-dark">{{ fotografia.nome}}</span>
               <div class="card__info">
                 <p class="card__titulo text-dark">{{fotografia.legenda}}</p>
