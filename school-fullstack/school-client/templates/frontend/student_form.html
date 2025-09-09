@@ -1,0 +1,39 @@
+{% extends 'frontend/base.html' %}
+{% block title %}{{ data.id|default:'Novo' }} Estudante • School Client{% endblock %}
+{% block content %}
+  <h2 class="h4">{{ data.id|default:'Novo' }} Estudante</h2>
+  {% if errors %}
+    <div class="alert alert-danger">
+      {% if errors.error %}{{ errors.error }}{% else %}Verifique os campos.{% endif %}
+    </div>
+  {% endif %}
+  <form method="post" class="mt-3">{% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Nome</label>
+        <input name="nome" class="form-control" required value="{{ data.nome|default:'' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">E-mail</label>
+        <input name="email" type="email" class="form-control" required value="{{ data.email|default:'' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">CPF</label>
+        <input name="cpf" class="form-control" required value="{{ data.cpf|default:'' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Nascimento</label>
+        <input name="data_nascimento" type="date" class="form-control" required value="{{ data.data_nascimento|default:'' }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Celular</label>
+        <input name="celular" class="form-control" value="{{ data.celular|default:'' }}">
+      </div>
+    </div>
+    <div class="mt-3">
+      <button class="btn btn-primary" type="submit">Salvar</button>
+      <a class="btn btn-light" href="/estudantes/">Cancelar</a>
+    </div>
+  </form>
+{% endblock %}
+

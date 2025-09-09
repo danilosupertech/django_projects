@@ -1,0 +1,25 @@
+{% extends 'frontend/base.html' %}
+{% block title %}Início • School Client{% endblock %}
+{% block content %}
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Estudantes</h5>
+          <p class="display-6">{{ students_count|default:'—' }}</p>
+          <a href="/estudantes/" class="btn btn-primary">Ver lista</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Cursos</h5>
+          <p class="display-6">{{ courses_count|default:'—' }}</p>
+          <a href="/cursos/" class="btn btn-primary">Ver lista</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

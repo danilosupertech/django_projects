@@ -1,0 +1,16 @@
+{% extends 'frontend/base.html' %}
+{% block title %}Matrículas do Estudante • School Client{% endblock %}
+{% block content %}
+  <h2 class="h4">Matrículas do Estudante #{{ student_id }}</h2>
+  <ul class="list-group list-group-flush">
+    {% for m in enrollments %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ m.curso }} </span>
+        <span class="badge text-bg-secondary">{{ m.periodo }}</span>
+      </li>
+    {% empty %}
+      <li class="list-group-item text-muted">Sem matrículas.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+

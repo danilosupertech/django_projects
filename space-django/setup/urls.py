@@ -1,18 +1,9 @@
 """
-URL configuration for setup project.
+PT: Mapeamento de URLs do projeto space-django.
+- Inclui as rotas do app `galeria` e a interface administrativa.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+EN: URL configuration for the space-django project.
+- Includes `galeria` app routes and the admin interface.
 """
 from django.contrib import admin
 from django.urls import path, include
@@ -21,6 +12,6 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('galeria.urls')),
+    path('admin/', admin.site.urls),  # PT: Admin | EN: Admin site
+    path('', include('galeria.urls')),  # PT/EN: Rotas do app galeria | gallery routes
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

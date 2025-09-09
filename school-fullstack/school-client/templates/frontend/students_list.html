@@ -1,0 +1,38 @@
+{% extends 'frontend/base.html' %}
+{% block title %}Estudantes • School Client{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h4 m-0">Estudantes</h2>
+    {% if has_token %}<a href="/estudantes/novo/" class="btn btn-sm btn-primary">Novo Estudante</a>{% endif %}
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>CPF</th>
+          <th>Nascimento</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+          <tr>
+            <td>{{ s.nome }}</td>
+            <td>{{ s.email }}</td>
+            <td><code>{{ s.cpf }}</code></td>
+            <td>{{ s.data_nascimento }}</td>
+            <td class="text-end">
+              <a href="/estudantes/{{ s.id }}/matriculas/" class="btn btn-sm btn-outline-primary me-2">Matrículas</a>
+              <a href="/estudantes/{{ s.id }}/notas/" class="btn btn-sm btn-outline-secondary me-2">Notas</a>
+              {% if has_token %}<a href="/estudantes/{{ s.id }}/editar/" class="btn btn-sm btn-outline-success">Editar</a>{% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center text-muted">Nenhum estudante encontrado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

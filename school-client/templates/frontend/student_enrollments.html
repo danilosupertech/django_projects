@@ -1,0 +1,27 @@
+{% extends 'frontend/base.html' %}
+{% block title %}Matrículas do Estudante • School Client{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <a href="javascript:history.back()" class="btn btn-sm btn-primary me-3">← Voltar</a>
+      <h2 class="h4 d-inline">Matrículas de {{ student.nome|default:'Estudante' }} <span class="text-muted">#{{ student_id }}</span></h2>
+      {% if student.email %}<div class="small text-muted">{{ student.email }}</div>{% endif %}
+    </div>
+    {% if has_token %}
+      <div>
+        <a href="/estudantes/{{ student_id }}/matriculas/nova/" class="btn btn-sm btn-primary me-2">Nova matrícula</a>
+        <a href="/estudantes/{{ student_id }}/notas/nova/" class="btn btn-sm btn-outline-secondary">Lançar nota</a>
+      </div>
+    {% endif %}
+  </div>
+  <ul class="list-group list-group-flush">
+    {% for m in enrollments %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ m.curso }}</span>
+        <span class="badge text-bg-secondary">{{ m.periodo }}</span>
+      </li>
+    {% empty %}
+      <li class="list-group-item text-muted">Sem matrículas.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'frontend/base.html' %}
+{% block title %}Entrar • School Client{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Entrar</h5>
+          {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+          <form method="post">{% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Usuário</label>
+              <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Senha</label>
+              <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Entrar</button>
+          </form>
+          <p class="text-muted small mt-3">Este login solicita um Token na API em <code>/api-token-auth/</code> e o usa para autorizar as operações.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
