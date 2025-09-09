@@ -1,3 +1,7 @@
+{#
+  PT: Página inicial da galeria com busca e listagem de cards.
+  EN: Gallery home page with search and card listing.
+#}
 {% extends "galeria/base.html" %} {% load static %} {% block content %}
 <div class="pagina-inicial">
   <header class="cabecalho">
@@ -35,7 +39,7 @@
         </ul>
       </section>
 
-      <section class="galeria">
+      <section class="galeria"> {# Lista todas as fotos publicadas #}
         <div class="cards">
           <h2 class="cards__titulo">Navegue pela galeria</h2>
           <ul class="cards__lista">
@@ -51,7 +55,7 @@
                   alt="foto"
                 />
                 {%else%}
-                <a href="{% url 'imagem' fotografia.id %}">
+                <a href="{% url 'imagem' fotografia.id %}"> {# Link para página de detalhes #}
                 <img
                   width="300"
                   height="200"

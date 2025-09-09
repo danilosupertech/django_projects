@@ -1,0 +1,34 @@
+[
+  build-system
+]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "escola"
+version = "0.1.0"
+description = "App Django de exemplo para gestão escolar (models, API DRF)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [
+  { name = "Seu Nome", email = "seu-email@example.com" }
+]
+classifiers = [
+  "Framework :: Django",
+  "Programming Language :: Python :: 3",
+  "License :: Other/Proprietary License",
+]
+dependencies = []
+
+[project.urls]
+Homepage = ""
+Repository = ""
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["escola*"]
+

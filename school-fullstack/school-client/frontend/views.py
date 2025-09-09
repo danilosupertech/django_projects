@@ -1,6 +1,10 @@
 """
 PT: Views do frontend que consomem a API school-rest via requests.
 EN: Frontend views consuming the school-rest API using requests.
+
+Este módulo demonstra boas práticas para quem está aprendendo:
+- Docstrings em funções explicando propósito, entradas e saídas.
+- Comentários em pontos de decisão (ex.: fallback de URL, tratamento de erros).
 """
 
 from django.conf import settings
@@ -12,6 +16,20 @@ from urllib.parse import urlparse, urlunparse
 
 
 def _api_headers(request: HttpRequest | None = None):
+    """Monta cabeçalhos comuns para chamadas à API.
+
+    PT: Prefere token salvo na sessão (após login); se não houver, usa `API_TOKEN`
+    do settings (definido no `.env` do client). Sempre envia `Accept: application/json`.
+
+    EN: Prefer session token (after login); fallback to `API_TOKEN` from settings.
+    Always sends `Accept: application/json`.
+
+    Args:
+        request: Requisição atual (pode ser None quando fora do ciclo de view).
+
+    Returns:
+        dict com cabeçalhos HTTP apropriados.
+    """
     # Prefer session token from login; fallback to .env token
     session_token = None
     if request is not None:
@@ -24,12 +42,14 @@ def _api_headers(request: HttpRequest | None = None):
 
 
 def _resolve_api_base():
-    """Return a reachable API base URL.
+    """Retorna uma base de API alcançável (URL) usando heurísticas simples.
 
-    Heuristics:
-    - Use `API_BASE_URL` from settings when it responds.
-    - If host is `0.0.0.0`, replace with `localhost`.
-    - If port is 8001 and connection is refused, try same host on 8000.
+    - Usa `API_BASE_URL` do settings se responder.
+    - Se o host for `0.0.0.0`, troca para `localhost` (clientes não conectam em 0.0.0.0).
+    - Se a porta for 8001, tenta fallback para 8000 no mesmo host.
+
+    Returns:
+        str: URL base sem barra final (ex.: "http://localhost:8001").
     """
     configured = (settings.API_BASE_URL or '').strip().rstrip('/') or 'http://localhost:8001'
 
@@ -81,7 +101,22 @@ def _resolve_api_base():
 
 
 def _fetch_json(url: str, params=None, request: HttpRequest | None = None):
-    """GET JSON with helpful error messages and token hints."""
+    """Realiza GET JSON com mensagens de erro amigáveis.
+
+    PT: Além de `raise_for_status`, tenta extrair detalhes do corpo (DRF) e
+    adiciona dicas quando há erro de autenticação (401/403).
+
+    EN: Besides `raise_for_status`, extracts DRF error details and adds auth hints
+    for 401/403 responses.
+
+    Args:
+        url: URL absoluta do recurso.
+        params: dicionário de query string.
+        request: request atual para pegar token de sessão (opcional).
+
+    Returns:
+        tuple[dict|list|None, str|None]: (payload, erro). `erro` é None se sucesso.
+    """
     try:
         resp = requests.get(url, params=params or {}, headers=_api_headers(request), timeout=10)
         try:
@@ -104,6 +139,11 @@ def _fetch_json(url: str, params=None, request: HttpRequest | None = None):
 
 
 def home(request: HttpRequest):
+    """Página inicial com contadores de estudantes e cursos.
+
+    Mostra também a URL base usada pela camada de consumo da API e o estado
+    de autenticação (se há token configurado).
+    """
     base = _resolve_api_base()
     ctx = {'api_base': base, 'has_token': bool(request.session.get('api_token') or settings.API_TOKEN)}
     students, err1 = _fetch_json(f"{base}/estudantes/", request=request)
@@ -117,6 +157,7 @@ def home(request: HttpRequest):
 
 
 def students_list(request: HttpRequest):
+    """Lista paginada de estudantes, consumindo `/estudantes/` da API."""
     base = _resolve_api_base()
     page = request.GET.get('page', '1')
     ctx = {'api_base': base, 'has_token': bool(request.session.get('api_token') or settings.API_TOKEN)}
@@ -131,6 +172,7 @@ def students_list(request: HttpRequest):
 
 
 def student_enrollments(request: HttpRequest, pk: int):
+    """Lista as matrículas de um estudante específico (por ID)."""
     base = _resolve_api_base()
     ctx = {'student_id': pk, 'api_base': base, 'has_token': bool(request.session.get('api_token') or settings.API_TOKEN)}
     data, err = _fetch_json(f"{base}/estudantes/{pk}/matriculas/", request=request)
@@ -141,6 +183,7 @@ def student_enrollments(request: HttpRequest, pk: int):
 
 
 def courses_list(request: HttpRequest):
+    """Lista paginada de cursos, consumindo `/cursos/` da API."""
     base = _resolve_api_base()
     page = request.GET.get('page', '1')
     ctx = {'api_base': base, 'has_token': bool(request.session.get('api_token') or settings.API_TOKEN)}
@@ -155,6 +198,7 @@ def courses_list(request: HttpRequest):
 
 
 def professors_list(request: HttpRequest):
+    """Lista paginada de professores, consumindo `/professores/` da API."""
     base = _resolve_api_base()
     page = request.GET.get('page', '1')
     ctx = {'api_base': base, 'has_token': bool(request.session.get('api_token') or settings.API_TOKEN)}
@@ -167,6 +211,7 @@ def professors_list(request: HttpRequest):
 
 
 def student_grades(request: HttpRequest, pk: int):
+    """Lista notas de um estudante (endpoint `/estudantes/<pk>/notas/`)."""
     base = _resolve_api_base()
     ctx = {'student_id': pk, 'api_base': base, 'has_token': bool(request.session.get('api_token') or settings.API_TOKEN)}
     data, err = _fetch_json(f"{base}/estudantes/{pk}/notas/", request=request)
@@ -177,6 +222,7 @@ def student_grades(request: HttpRequest, pk: int):
 
 
 def course_grades(request: HttpRequest, pk: int):
+    """Lista notas de um curso (endpoint `/cursos/<pk>/notas/`)."""
     base = _resolve_api_base()
     ctx = {'course_id': pk, 'api_base': base, 'has_token': bool(request.session.get('api_token') or settings.API_TOKEN)}
     data, err = _fetch_json(f"{base}/cursos/{pk}/notas/", request=request)
@@ -189,6 +235,11 @@ def course_grades(request: HttpRequest, pk: int):
 # --- Auth & CRUD helpers ---
 
 def login_view(request: HttpRequest):
+    """Realiza login na API DRF de `school-rest` e salva o token na sessão.
+
+    POST envia `username` e `password` para `/api-token-auth/` e, se bem-sucedido,
+    armazena o token na sessão do usuário do site cliente.
+    """
     base = _resolve_api_base()
     ctx = {'api_base': base, 'has_token': bool(request.session.get('api_token') or settings.API_TOKEN)}
     if request.method == 'POST':
@@ -212,15 +263,18 @@ def login_view(request: HttpRequest):
 
 
 def logout_view(request: HttpRequest):
+    """Remove o token de API salvo na sessão e redireciona para a home."""
     request.session.pop('api_token', None)
     return redirect('home')
 
 
 def student_form_context(base: str, has_token: bool, data=None, errors=None):
+    """Contexto compartilhado para o template de formulário de estudante."""
     return {'api_base': base, 'has_token': has_token, 'data': data or {}, 'errors': errors}
 
 
 def student_create(request: HttpRequest):
+    """Cria um estudante via POST na API e renderiza o formulário."""
     base = _resolve_api_base()
     has_token = bool(request.session.get('api_token') or settings.API_TOKEN)
     if request.method == 'POST':
@@ -242,6 +296,7 @@ def student_create(request: HttpRequest):
 
 
 def student_edit(request: HttpRequest, pk: int):
+    """Edita um estudante existente (carrega dados no GET e envia PUT no POST)."""
     base = _resolve_api_base()
     has_token = bool(request.session.get('api_token') or settings.API_TOKEN)
     if request.method == 'POST':
@@ -265,10 +320,12 @@ def student_edit(request: HttpRequest, pk: int):
 
 
 def course_form_context(base: str, has_token: bool, data=None, errors=None):
+    """Contexto compartilhado para o template de formulário de curso."""
     return {'api_base': base, 'has_token': has_token, 'data': data or {}, 'errors': errors}
 
 
 def course_create(request: HttpRequest):
+    """Cria um curso via POST na API e renderiza o formulário."""
     base = _resolve_api_base()
     has_token = bool(request.session.get('api_token') or settings.API_TOKEN)
     if request.method == 'POST':
@@ -288,6 +345,7 @@ def course_create(request: HttpRequest):
 
 
 def course_edit(request: HttpRequest, pk: int):
+    """Edita um curso existente (carrega dados no GET e envia PUT no POST)."""
     base = _resolve_api_base()
     has_token = bool(request.session.get('api_token') or settings.API_TOKEN)
     if request.method == 'POST':

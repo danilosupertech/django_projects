@@ -1,0 +1,21 @@
+site_name: School REST API Docs
+site_description: Documentação gerada a partir de docstrings do app escola
+theme: readthedocs
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+            show_root_full_path: false
+            docstring_style: google
+
+nav:
+  - Início: index.md
+  - Referência:
+    - Models: reference/models.md
+    - Serializers: reference/serializers.md
+    - Views: reference/views.md
+
