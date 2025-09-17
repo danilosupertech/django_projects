@@ -45,17 +45,16 @@
           <ul class="cards__lista">
             {% if cards %} {% for fotografia in cards %}
             <li class="card">
-              
-                {% if fotografia.imagem == "" or fotografia.imagem == null %}
-                <img
-                  width="300"
-                  height="200"
-                  class="card__imagem"
-                  src="{% static 'assets/imagens/galeria/sem-foto.png' %}"
-                  alt="foto"
-                />
-                {%else%}
-                <a href="{% url 'imagem' fotografia.id %}"> {# Link para página de detalhes #}
+              {% if not fotografia.imagem %}
+              <img
+                width="300"
+                height="200"
+                class="card__imagem"
+                src="{% static 'assets/imagens/galeria/sem-foto.png' %}"
+                alt="foto"
+              />
+              {% else %}
+              <a href="{% url 'imagem' fotografia.id %}"> {# Link para página de detalhes #}
                 <img
                   width="300"
                   height="200"
@@ -64,7 +63,7 @@
                   alt="foto"
                 />
               </a>
-              {%endif%}
+              {% endif %}
               <span class="card__tag text-dark">{{ fotografia.nome}}</span>
               <div class="card__info">
                 <p class="card__titulo text-dark">{{fotografia.legenda}}</p>
