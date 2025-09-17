@@ -79,9 +79,10 @@ class ListaMatriculasEstudante(generics.ListAPIView):
 
 
 class ListaMatriculasCurso(generics.ListAPIView):
-    """PT: Lista estudantes matriculados em um curso.
-    EN: Lists students enrolled in a course.
+    """PT: Lista estudantes matriculados em um curso (requer autenticação).
+    EN: Lists students enrolled in a course (requires authentication).
     """
+    permission_classes = [IsAuthenticated]
     serializer_class = ListaMatriculasCursoSerializer
 
     def get_queryset(self):
